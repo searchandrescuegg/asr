@@ -1,0 +1,46 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+env:
+  GH_CI_USER: kochava-ci
+  GOPRIVATE: "github.com/Kochava"
+
+jobs:
+  commitlint:
+    #
+    # ensures commit messages follow conventional commits
+    #
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm install --save-dev @commitlint/{config-conventional@v18.6.0,cli}
+      - run: npx commitlint --from=${{ github.event.pull_request.base.sha }}
+  lint:
+    #
+    # Lint the codebase using ruff
+    #
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Sync Dependencies
+        run: |
+          uv sync --no-dev --locked
+      - uses: astral-sh/ruff-action@v2
