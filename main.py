@@ -50,7 +50,9 @@ async def transcribe_audio(file: UploadFile = File(...)):
         }
 
     except Exception as ex:
-        raise HTTPException(status_code=400, detail=f"Error processing audio: {str(e)}")
+        raise HTTPException(
+            status_code=400, detail=f"Error processing audio: {str(ex)}"
+        )
 
 
 # Gradio interface function
