@@ -8,7 +8,7 @@ import torch
 
 try:
     device = torch.device("cuda")
-    torch.cuda.get_device_name(0)  # This will fail if no GPU
+    torch.cuda.get_device_name(0)
     print(f"\n\n\nUsing GPU: {torch.cuda.get_device_name(0)}\n\n\n")
 except:
     print("No GPU available. Terminating application.")
