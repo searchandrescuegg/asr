@@ -3,6 +3,17 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import librosa
 import nemo.collections.asr as nemo_asr
 import gradio as gr
+import sys
+import torch
+
+try:
+    device = torch.device("cuda")
+    torch.cuda.get_device_name(0)  # This will fail if no GPU
+    print(f"\n\n\nUsing GPU: {torch.cuda.get_device_name(0)}\n\n\n")
+except:
+    print("No GPU available. Terminating application.")
+    sys.exit(1)
+
 
 # Load the ASR model once at startup
 asr_model = nemo_asr.models.ASRModel.from_pretrained(
