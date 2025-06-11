@@ -3,6 +3,17 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import librosa
 import nemo.collections.asr as nemo_asr
 import gradio as gr
+import sys
+import torch
+
+try:
+    device = torch.device("cuda")
+    torch.cuda.get_device_name(0)
+    print(f"\n\n\nUsing GPU: {torch.cuda.get_device_name(0)}\n\n\n")
+except Exception as ex:
+    print(f"No GPU available. Exception: {str(ex)} Terminating application.")
+    sys.exit(1)
+
 
 # Load the ASR model once at startup
 asr_model = nemo_asr.models.ASRModel.from_pretrained(
@@ -38,8 +49,10 @@ async def transcribe_audio(file: UploadFile = File(...)):
             "transcription": transcription.text,
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error processing audio: {str(e)}")
+    except Exception as ex:
+        raise HTTPException(
+            status_code=400, detail=f"Error processing audio: {str(ex)}"
+        )
 
 
 # Gradio interface function
