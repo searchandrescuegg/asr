@@ -15,6 +15,16 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "ruff>=0.11.13",
-]
+dev = ["ruff>=0.11.13"]
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu121"
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+torchvision = { index = "pytorch" }
+torchaudio = { index = "pytorch" }
