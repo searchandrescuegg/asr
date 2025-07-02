@@ -5,8 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
-    "torch>=2.0.0",
-    "torchaudio>=2.0.0",
     "cuda-python>=12.9.0",
     "fastapi[standard]>=0.115.12",
     "gradio>=5.33.1",
@@ -19,10 +17,14 @@ dependencies = [
 [dependency-groups]
 dev = ["ruff>=0.11.13"]
 
+[tool.uv]
+index-strategy = "unsafe-best-match"
+
 [[tool.uv.index]]
 name = "pytorch"
-url = "https://download.pytorch.org/whl/cu128"
+url = "https://download.pytorch.org/whl/cu121"
 
 [tool.uv.sources]
 torch = { index = "pytorch" }
+torchvision = { index = "pytorch" }
 torchaudio = { index = "pytorch" }
