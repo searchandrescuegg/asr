@@ -1,6 +1,6 @@
 
 # Stage 1: Base image with system dependencies
-FROM nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04 AS base
+FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu22.04 AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,11 +20,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV CC=gcc
 ENV CXX=g++
 
-COPY --from=ghcr.io/astral-sh/uv:0.4.9 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.7.18 /uv /bin/uv
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 ENV UV_INDEX_STRATEGY=unsafe-best-match
-ENV UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cu128"
+ENV UV_HTTP_TIMEOUT=60
 
 WORKDIR /app
 
