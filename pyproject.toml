@@ -20,7 +20,7 @@ dev = ["ruff>=0.11.13"]
 
 [tool.uv]
 prerelease = "allow"
-extra-index-url = "https://download.pytorch.org/whl/cu128"
+extra-index-url = ["https://download.pytorch.org/whl/cu128"]
 
 [tool.uv.pip]
 index-strategy = "unsafe-best-match"
