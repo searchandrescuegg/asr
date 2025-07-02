@@ -1,6 +1,6 @@
 
 # Stage 1: Base image with system dependencies
-FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu22.04 AS base
+FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu22.04 AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
