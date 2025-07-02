@@ -42,5 +42,5 @@ jobs:
 
       - name: Sync Dependencies
         run: |
-          uv sync --no-dev --locked
+          uv sync --no-dev --locked --prerelease=allow --index-strategy=unsafe-best-match
       - uses: astral-sh/ruff-action@v2
