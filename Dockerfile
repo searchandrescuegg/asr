@@ -25,6 +25,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.7.18 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 ENV UV_INDEX_STRATEGY=unsafe-best-match
 ENV UV_HTTP_TIMEOUT=60
+ENV UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cu128"
 
 WORKDIR /app
 
