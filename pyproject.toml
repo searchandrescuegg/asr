@@ -1,6 +1,6 @@
 [project]
 name = "asr"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.11.*"
@@ -9,8 +9,9 @@ dependencies = [
     "fastapi[standard]>=0.115.12",
     "gradio>=5.33.1",
     "librosa>=0.11.0",
-    "nemo-toolkit[asr]>=2.3.1",
+    "nemo-toolkit[asr]>=2.4.0rc0",
     "python-multipart>=0.0.20",
+    "torch>=2.9.0.dev20250701",
     "uvicorn[standard]>=0.34.3",
 ]
 
@@ -18,13 +19,15 @@ dependencies = [
 dev = ["ruff>=0.11.13"]
 
 [tool.uv]
-index-strategy = "unsafe-best-match"
+prerelease = "allow"
+extra-index-url = ["https://download.pytorch.org/whl/cu128"]
 
-[[tool.uv.index]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cu121"
+[tool.uv.pip]
+index-strategy = "unsafe-best-match"
 
 [tool.uv.sources]
 torch = { index = "pytorch" }
-torchvision = { index = "pytorch" }
-torchaudio = { index = "pytorch" }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/nightly/cu128"
