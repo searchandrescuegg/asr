@@ -63,10 +63,11 @@ def mount_ui(app: FastAPI) -> FastAPI:
                 allow_custom_value=False,
             )
         submit = gr.Button("Transcribe", variant="primary")
+        # Gradio 6 dropped the show_copy_button kwarg on Textbox (a copy
+        # affordance is built in by default). Don't pass it.
         result_box = gr.Textbox(
             label="Transcription",
             lines=8,
-            show_copy_button=True,
             visible=True,
         )
         ui.load(fn=lambda: gr.update(choices=available_choices()), outputs=model_dd)

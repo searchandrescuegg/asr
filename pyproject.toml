@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
     "fastapi[standard]>=0.115.12",
-    "gradio>=5.33.1",
+    # Pin to gradio 6.x explicitly. The previous `>=5.33.1` would happily
+    # resolve to gradio 7+ and reintroduce silent breakage like the
+    # show_copy_button removal in 6.0.
+    "gradio>=6.0,<7",
     "librosa>=0.11.0",
     # NeMo + cuda-python are CUDA-only (Linux). On macOS the Parakeet
     # adapter's lazy `import nemo` raises and the model is marked FAILED
