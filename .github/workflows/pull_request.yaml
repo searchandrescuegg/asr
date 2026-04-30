@@ -32,3 +32,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v2
+
+  tests:
+    #
+    # Unit + contract + integration tests on CPU (no GPU/model markers).
+    # Heavy tests (gpu_required, model_required, slo) are gated to GPU runners.
+    #
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Sync test dependencies (skip torch/cuda; offline-safe pure-Python tests)
+        run: uv sync --group test --no-install-project --index-strategy=unsafe-best-match || true
+      - name: Run pytest (CPU, default markers)
+        env:
+          ASR_ALLOW_CPU: "1"
+        run: uv run pytest
+
+  # NOTE: A `gpu-tests` job (real-model smoke, CUDA presence, SLO regression,
+  # containerized E2E — Constitution IV layers 2/3/4 + Constitution VI) is
+  # intentionally not present here. There is no GPU self-hosted runner
+  # available yet; queueing the job would block PR completion forever.
+  # See specs/001-multi-model-asr/tasks.md T053 for the wiring to add when
+  # a runner exists.

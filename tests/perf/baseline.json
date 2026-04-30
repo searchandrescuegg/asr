@@ -1,0 +1,24 @@
+{
+  "_README": "Constitution VI SLO baseline. Update this file via a deliberate run on the reference GPU host (single CUDA-capable NVIDIA GPU >= 8 GB VRAM, CUDA 12.x). The test harness asserts each metric does not regress >10% versus this baseline AND does not violate the absolute thresholds in the constitution.",
+  "absolute_thresholds": {
+    "p95_rtf": 0.5,
+    "p95_api_overhead_seconds": 0.1,
+    "cold_start_seconds": 60.0,
+    "steady_state_vram_bytes": 8589934592
+  },
+  "captured": {
+    "_status": "PENDING — populate with a real GPU run; see tests/perf/test_slos.py for the harness.",
+    "p95_rtf_per_model": {
+      "parakeet-tdt-0.6b-v2": null,
+      "seamless-m4t-v2": null
+    },
+    "p95_api_overhead_seconds": null,
+    "cold_start_seconds_per_model": {
+      "parakeet-tdt-0.6b-v2": null,
+      "seamless-m4t-v2": null
+    },
+    "steady_state_vram_bytes": null,
+    "captured_at": null,
+    "git_sha": null
+  }
+}
