@@ -32,3 +32,49 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v2
+
+  tests:
+    #
+    # Unit + contract + integration tests on CPU (no GPU/model markers).
+    # Heavy tests (gpu_required, model_required, slo) are gated to GPU runners.
+    #
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Sync test dependencies (skip torch/cuda; offline-safe pure-Python tests)
+        run: uv sync --group test --no-install-project --index-strategy=unsafe-best-match || true
+      - name: Run pytest (CPU, default markers)
+        env:
+          ASR_ALLOW_CPU: "1"
+        run: uv run pytest
+
+  gpu-tests:
+    #
+    # Heavy tests gated to GPU runners: real-model smoke, CUDA presence,
+    # SLO regression, containerized E2E. Skipped on forks (no GPU runner
+    # access) per Constitution IV.
+    #
+    name: GPU Tests
+    runs-on: [self-hosted, gpu]
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Sync full deps (torch + cu128)
+        run: uv sync --group test --index-strategy=unsafe-best-match
+      - name: Run gpu_required + model_required + slo
+        run: uv run pytest -m "gpu_required or model_required or slo"
