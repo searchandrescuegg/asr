@@ -42,32 +42,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: "pyproject.toml"
       - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-      - name: Install runtime + test deps (skip torch/cuda — bypasses cu128 nightly churn)
-        run: |
-          python -m pip install --upgrade pip
-          # Install only the deps the unit/integration/contract tests actually
-          # touch. Avoids pulling cu128 nightly torch (whose triton subversions
-          # disappear daily) and CUDA-only packages.
-          python -m pip install \
-            'pytest>=8.0' 'pytest-asyncio>=0.24' 'httpx>=0.27' \
-            'pydantic>=2' 'pydantic-settings>=2.5' \
-            'fastapi==0.115.14' 'uvicorn[standard]>=0.30' 'python-multipart==0.0.20' \
-            structlog 'prometheus-client>=0.20' \
-            'opentelemetry-api>=1.27' 'opentelemetry-sdk>=1.27' \
-            'opentelemetry-exporter-otlp-proto-http>=1.27' \
-            'opentelemetry-instrumentation-fastapi>=0.48b0' \
-            soundfile librosa numpy
-          python -m pip install --no-deps -e .
+      - name: uv sync from lockfile (no re-resolution)
+        # `--frozen` installs the locked versions verbatim and skips
+        # re-resolution. Required because cu128 nightly torch
+        # subversions disappear daily, breaking any fresh resolve.
+        run: uv sync --frozen --group test
       - name: Run pytest (CPU, default markers)
         env:
           ASR_ALLOW_CPU: "1"
-        run: pytest
+        run: uv run --frozen pytest
 
   # NOTE: A `gpu-tests` job (real-model smoke, CUDA presence, SLO regression,
   # containerized E2E — Constitution IV layers 2/3/4 + Constitution VI) is
