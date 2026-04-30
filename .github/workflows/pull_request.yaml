@@ -57,24 +57,9 @@ jobs:
           ASR_ALLOW_CPU: "1"
         run: uv run pytest
 
-  gpu-tests:
-    #
-    # Heavy tests gated to GPU runners: real-model smoke, CUDA presence,
-    # SLO regression, containerized E2E. Skipped on forks (no GPU runner
-    # access) per Constitution IV.
-    #
-    name: GPU Tests
-    runs-on: [self-hosted, gpu]
-    if: github.event.pull_request.head.repo.full_name == github.repository
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: "pyproject.toml"
-      - name: Sync full deps (torch + cu128)
-        run: uv sync --group test --index-strategy=unsafe-best-match
-      - name: Run gpu_required + model_required + slo
-        run: uv run pytest -m "gpu_required or model_required or slo"
+  # NOTE: A `gpu-tests` job (real-model smoke, CUDA presence, SLO regression,
+  # containerized E2E — Constitution IV layers 2/3/4 + Constitution VI) is
+  # intentionally not present here. There is no GPU self-hosted runner
+  # available yet; queueing the job would block PR completion forever.
+  # See specs/001-multi-model-asr/tasks.md T053 for the wiring to add when
+  # a runner exists.
