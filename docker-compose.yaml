@@ -1,11 +1,22 @@
 ---
+# Two run profiles:
+#   make docker-gpu   →  docker compose --profile gpu  up --build
+#   make docker-cpu   →  docker compose --profile cpu  up --build
+#
+# `gpu` reserves an NVIDIA device (Linux + nvidia-container-toolkit).
+# `cpu` runs the same image with ASR_ALLOW_CPU=1 and no GPU reservation;
+# real Parakeet/Seamless model loads will be slow but the API/UI work.
+
 services:
-  asr:
+  asr-gpu:
+    profiles: ["gpu"]
     build:
       context: .
-    # image: ghcr.io/searchandrescuegg/asr:v1.1.0
+    image: asr:local
     ports:
       - "8000:8000"
+    environment:
+      ASR_ENABLED_MODELS: "parakeet-tdt-0.6b-v2,seamless-m4t-v2"
     deploy:
       resources:
         reservations:
@@ -13,3 +24,17 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+  asr-cpu:
+    profiles: ["cpu"]
+    build:
+      context: .
+    image: asr:local
+    ports:
+      - "8000:8000"
+    environment:
+      ASR_ALLOW_CPU: "1"
+      # Skip the heavy real-model loads in CPU mode; the API/UI come up
+      # immediately and report an empty model list. Override this var
+      # if you actually want to download + run a model on CPU.
+      ASR_ENABLED_MODELS: ""

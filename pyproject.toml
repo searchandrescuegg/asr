@@ -5,23 +5,29 @@ description = "Multi-model speech transcription server (NVIDIA Parakeet, Faceboo
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
-    "cuda-python>=12.9.0",
     "fastapi[standard]>=0.115.12",
     "gradio>=5.33.1",
     "librosa>=0.11.0",
-    "nemo-toolkit[asr]>=2.4.0rc0",
+    # NeMo + cuda-python are CUDA-only (Linux). On macOS the Parakeet
+    # adapter's lazy `import nemo` raises and the model is marked FAILED
+    # at startup; the rest of the app continues to serve.
+    "nemo-toolkit[asr]>=2.4.0rc0; sys_platform == 'linux'",
+    "cuda-python>=12.9.0; sys_platform == 'linux'",
     "opentelemetry-api>=1.27.0",
     "opentelemetry-exporter-otlp-proto-http>=1.27.0",
     "opentelemetry-instrumentation-fastapi>=0.48b0",
     "opentelemetry-sdk>=1.27.0",
     "prometheus-client>=0.20.0",
     "pydantic-settings>=2.5.0",
-    "pynvml>=11.5.0",
+    "pynvml>=11.5.0; sys_platform == 'linux'",
     "python-multipart>=0.0.20",
     "sentencepiece>=0.2.0",
     "soundfile>=0.12.1",
     "structlog>=24.4.0",
-    "torch>=2.9.0.dev20250701",
+    # Linux: pinned cu128 nightly via tool.uv.sources below.
+    # macOS: standard PyPI wheel (CPU/MPS).
+    "torch>=2.9.0.dev20250701; sys_platform == 'linux'",
+    "torch>=2.4; sys_platform == 'darwin'",
     "transformers>=4.45,<5.0",
     "uvicorn[standard]>=0.34.3",
 ]
@@ -41,17 +47,28 @@ test = [
 
 [tool.uv]
 prerelease = "allow"
-extra-index-url = ["https://download.pytorch.org/whl/cu128"]
+# `uv.lock` is the canonical Linux+CUDA resolution (the prod target).
+# The cu128 nightly torch is regenerated infrequently because the
+# upstream nightlies churn (see Makefile `make lock`).
+# macOS contributors should NOT use `uv sync` — the lockfile pins
+# Linux-only artefacts. Use `make install-mac` (or `pip install -e .`),
+# which resolves from PyPI without the lockfile and pulls a CPU/MPS
+# torch wheel.
 
 [tool.uv.pip]
 index-strategy = "unsafe-best-match"
 
+# Linux installs torch from the pytorch nightly cu128 index; macOS falls
+# through to PyPI for a standard CPU/MPS torch wheel.
 [tool.uv.sources]
-torch = { index = "pytorch" }
+torch = [
+    { index = "pytorch-cu128", marker = "sys_platform == 'linux'" },
+]
 
 [[tool.uv.index]]
-name = "pytorch"
+name = "pytorch-cu128"
 url = "https://download.pytorch.org/whl/nightly/cu128"
+explicit = true
 
 [build-system]
 requires = ["hatchling"]
