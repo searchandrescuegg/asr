@@ -24,9 +24,13 @@ dependencies = [
     "sentencepiece>=0.2.0",
     "soundfile>=0.12.1",
     "structlog>=24.4.0",
-    # Linux: pinned cu128 nightly via tool.uv.sources below.
+    # Linux: stable cu128 torch via tool.uv.sources below. The previous
+    # cu128 *nightly* index was unusable in production: subversion wheels
+    # (cublas, cusparselt, triton+gitXYZ) are garbage-collected within
+    # hours of being published, so by the time a release ran the locked
+    # transitive deps would 403. Stable cu128 doesn't have that problem.
     # macOS: standard PyPI wheel (CPU/MPS).
-    "torch>=2.9.0.dev20250701; sys_platform == 'linux'",
+    "torch>=2.9,<3; sys_platform == 'linux'",
     "torch>=2.4; sys_platform == 'darwin'",
     "transformers>=4.45,<5.0",
     "uvicorn[standard]>=0.34.3",
@@ -46,10 +50,12 @@ test = [
 ]
 
 [tool.uv]
+# Required because `nemo-toolkit` exposes its 2.4.0 line as `2.4.0rcN`
+# release candidates. Without this, uv will not consider those.
 prerelease = "allow"
 # `uv.lock` is the canonical Linux+CUDA resolution (the prod target).
-# The cu128 nightly torch is regenerated infrequently because the
-# upstream nightlies churn (see Makefile `make lock`).
+# We're on the *stable* cu128 channel, not nightly, so the locked
+# wheels stay fetchable.
 # macOS contributors should NOT use `uv sync` — the lockfile pins
 # Linux-only artefacts. Use `make install-mac` (or `pip install -e .`),
 # which resolves from PyPI without the lockfile and pulls a CPU/MPS
@@ -58,7 +64,7 @@ prerelease = "allow"
 [tool.uv.pip]
 index-strategy = "unsafe-best-match"
 
-# Linux installs torch from the pytorch nightly cu128 index; macOS falls
+# Linux installs torch from the pytorch stable cu128 index; macOS falls
 # through to PyPI for a standard CPU/MPS torch wheel.
 [tool.uv.sources]
 torch = [
@@ -67,7 +73,7 @@ torch = [
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/nightly/cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [build-system]
