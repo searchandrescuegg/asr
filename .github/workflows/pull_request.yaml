@@ -50,34 +50,11 @@ jobs:
           python-version-file: "pyproject.toml"
       - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-      - name: Install dependencies via uv pip
-        # We can't use `uv sync` here: the lockfile pins cu128 nightly
-        # torch + transitive NVIDIA wheels (cusparselt, triton+gitXYZ)
-        # whose specific versions get garbage-collected from the
-        # pytorch nightly index daily, returning 403s. `uv pip install`
-        # is still uv (uv resolver, uv cache, uv-managed venv); it's
-        # the supported escape hatch for environments where we don't
-        # need the production CUDA stack. The CUDA-required tests
-        # (gpu_required, model_required, slo) are deselected by
-        # default and run only on GPU runners with the full uv sync.
-        #
-        # fastapi + python-multipart are pinned to the versions the
-        # OpenAPI freshness contract was generated against, so that
-        # gate remains deterministic.
-        run: |
-          uv venv --python 3.11
-          # Upper bounds where prereleases or 1.0 dev releases would
-          # otherwise creep in via [tool.uv] prerelease = "allow".
-          uv pip install \
-            'pytest>=8.0' 'pytest-asyncio>=0.24' 'httpx>=0.27,<1' \
-            'pydantic>=2,<3' 'pydantic-settings>=2.5' \
-            'fastapi==0.115.14' 'uvicorn[standard]>=0.30' 'python-multipart==0.0.20' \
-            structlog 'prometheus-client>=0.20' \
-            'opentelemetry-api>=1.27,<2' 'opentelemetry-sdk>=1.27,<2' \
-            'opentelemetry-exporter-otlp-proto-http>=1.27,<2' \
-            'opentelemetry-instrumentation-fastapi>=0.48b0,<1' \
-            soundfile librosa numpy
-          uv pip install --no-deps -e .
+      - name: uv sync from lockfile
+        # Stable cu128 torch + PyPI-sourced NVIDIA wheels in the lock
+        # are reliably fetchable, so the production sync flow works in
+        # CI too. `--frozen` skips re-resolution.
+        run: uv sync --frozen --group test
       - name: Run pytest (CPU, default markers)
         env:
           ASR_ALLOW_CPU: "1"
