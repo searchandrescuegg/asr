@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     max_file_bytes: int = 100 * 1024 * 1024
     max_audio_seconds: float = 600.0
     queue_depth: int = 4
-    default_model: str = "parakeet-tdt-0.6b-v2"
-    enabled_models: str = "parakeet-tdt-0.6b-v2,seamless-m4t-v2"
+    default_model: str = "parakeet-tdt-0.6b-v3"
+    enabled_models: str = "parakeet-tdt-0.6b-v3,seamless-m4t-v2"
 
     @property
     def enabled_model_ids(self) -> list[str]:

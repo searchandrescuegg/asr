@@ -32,7 +32,7 @@ def _build_models() -> list:
     models = []
     for model_id in settings.enabled_model_ids:
         try:
-            if model_id == "parakeet-tdt-0.6b-v2":
+            if model_id == "parakeet-tdt-0.6b-v3":
                 from asr.models.parakeet import ParakeetModel
 
                 models.append(ParakeetModel())

@@ -9,12 +9,12 @@
   "captured": {
     "_status": "PENDING — populate with a real GPU run; see tests/perf/test_slos.py for the harness.",
     "p95_rtf_per_model": {
-      "parakeet-tdt-0.6b-v2": null,
+      "parakeet-tdt-0.6b-v3": null,
       "seamless-m4t-v2": null
     },
     "p95_api_overhead_seconds": null,
     "cold_start_seconds_per_model": {
-      "parakeet-tdt-0.6b-v2": null,
+      "parakeet-tdt-0.6b-v3": null,
       "seamless-m4t-v2": null
     },
     "steady_state_vram_bytes": null,
