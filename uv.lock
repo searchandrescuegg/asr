@@ -193,7 +193,7 @@ test = [
 requires-dist = [
     { name = "cuda-python", marker = "sys_platform == 'linux'", specifier = ">=12.9.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
-    { name = "gradio", specifier = ">=5.33.1" },
+    { name = "gradio", specifier = ">=6.0,<7" },
     { name = "librosa", specifier = ">=0.11.0" },
     { name = "nemo-toolkit", extras = ["asr"], marker = "sys_platform == 'linux'", specifier = ">=2.4.0rc0" },
     { name = "opentelemetry-api", specifier = ">=1.27.0" },
