@@ -52,8 +52,8 @@ export ASR_PORT=8000
 export ASR_MAX_FILE_BYTES=$((100 * 1024 * 1024))   # 100 MB
 export ASR_MAX_AUDIO_SECONDS=600                   # 10 minutes
 export ASR_QUEUE_DEPTH=4
-export ASR_DEFAULT_MODEL=parakeet-tdt-0.6b-v2
-export ASR_ENABLED_MODELS=parakeet-tdt-0.6b-v2,seamless-m4t-v2
+export ASR_DEFAULT_MODEL=parakeet-tdt-0.6b-v3
+export ASR_ENABLED_MODELS=parakeet-tdt-0.6b-v3,seamless-m4t-v2
 
 # Optional: enable distributed tracing (no-op when unset)
 # export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
@@ -70,8 +70,8 @@ uv run python -m asr
 You should see structured JSON logs of the form:
 
 ```json
-{"event": "model_loading", "model": "parakeet-tdt-0.6b-v2", ...}
-{"event": "model_ready",   "model": "parakeet-tdt-0.6b-v2", "load_seconds": 12.3, ...}
+{"event": "model_loading", "model": "parakeet-tdt-0.6b-v3", ...}
+{"event": "model_ready",   "model": "parakeet-tdt-0.6b-v3", "load_seconds": 12.3, ...}
 {"event": "model_loading", "model": "seamless-m4t-v2", ...}
 {"event": "model_ready",   "model": "seamless-m4t-v2",   "load_seconds": 41.2, ...}
 {"event": "server_ready",  "host": "0.0.0.0", "port": 8000}
@@ -94,12 +94,12 @@ curl -s http://localhost:8000/api/v1/healthz | jq
 
 # List models
 curl -s http://localhost:8000/api/v1/models | jq
-# → {"default": "parakeet-tdt-0.6b-v2", "models": [{"identifier": "parakeet-tdt-0.6b-v2", "state": "READY", ...}, ...]}
+# → {"default": "parakeet-tdt-0.6b-v3", "models": [{"identifier": "parakeet-tdt-0.6b-v3", "state": "READY", ...}, ...]}
 
 # Transcribe with the default model (Parakeet)
 curl -s -X POST http://localhost:8000/api/v1/transcribe \
   -F "file=@audio/sample.wav" | jq
-# → {"text": "...", "model": "parakeet-tdt-0.6b-v2", "audio_duration_s": ..., "no_speech_detected": false, "correlation_id": "..."}
+# → {"text": "...", "model": "parakeet-tdt-0.6b-v3", "audio_duration_s": ..., "no_speech_detected": false, "correlation_id": "..."}
 
 # Transcribe with Seamless explicitly
 curl -s -X POST http://localhost:8000/api/v1/transcribe \
@@ -144,9 +144,9 @@ There is no cancel button by design (clarified 2026-04-29).
 ```bash
 # Prometheus metrics
 curl -s http://localhost:8000/metrics | grep asr_
-# → asr_requests_total{model="parakeet-tdt-0.6b-v2",status="ok"} 1
-#   asr_request_duration_seconds_bucket{model="parakeet-tdt-0.6b-v2",stage="inference",le="..."} ...
-#   asr_queue_depth{model="parakeet-tdt-0.6b-v2"} 0
+# → asr_requests_total{model="parakeet-tdt-0.6b-v3",status="ok"} 1
+#   asr_request_duration_seconds_bucket{model="parakeet-tdt-0.6b-v3",stage="inference",le="..."} ...
+#   asr_queue_depth{model="parakeet-tdt-0.6b-v3"} 0
 #   asr_gpu_memory_used_bytes ...
 #   ...
 ```

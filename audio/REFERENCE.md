@@ -16,7 +16,7 @@ against. Update them whenever the bundled model version changes.
 
 | Model identifier              | Published WER | Source                                              |
 |-------------------------------|---------------|-----------------------------------------------------|
-| `parakeet-tdt-0.6b-v2`        | 0.064         | NVIDIA model card (Parakeet-TDT 0.6B v2, LibriSpeech test-clean) |
+| `parakeet-tdt-0.6b-v3`        | 0.061 (en)    | NVIDIA model card (Parakeet-TDT 0.6B v3 multilingual, English on LibriSpeech test-clean). v3 is multilingual across 25 European languages; per-language WERs vary, but the SC-003 fixture set is English so the English number is the gate. |
 | `seamless-m4t-v2`             | 0.090         | Meta SeamlessM4T paper (English ASR, FLEURS test)   |
 
 ## Fixtures

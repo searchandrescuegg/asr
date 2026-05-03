@@ -76,7 +76,7 @@ async def test_model_not_found(client):
 @pytest.mark.asyncio
 async def test_no_default_model_available(stub_model, monkeypatch):
     """Default not registered → NO_DEFAULT_MODEL on a request without explicit model."""
-    monkeypatch.setenv("ASR_DEFAULT_MODEL", "parakeet-tdt-0.6b-v2")
+    monkeypatch.setenv("ASR_DEFAULT_MODEL", "parakeet-tdt-0.6b-v3")
     monkeypatch.setenv("ASR_ENABLED_MODELS", "stub-en")
     from asr.config import reset_settings_for_tests
 

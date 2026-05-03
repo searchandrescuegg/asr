@@ -6,12 +6,17 @@ from asr.models.base import ASRModel, ModelOutput, ModelState
 
 
 class ParakeetModel(ASRModel):
-    identifier = "parakeet-tdt-0.6b-v2"
-    name = "NVIDIA Parakeet-TDT 0.6B v2"
+    identifier = "parakeet-tdt-0.6b-v3"
+    name = "NVIDIA Parakeet-TDT 0.6B v3"
     vendor = "nvidia"
-    languages = ["en"]
+    # Parakeet-TDT 0.6B v3 is multilingual: 25 European languages.
+    languages = [
+        "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr",
+        "hr", "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt", "ro",
+        "ru", "sk", "sl", "sv", "uk",
+    ]
     expected_sr_hz = 16_000
-    _hf_id = "nvidia/parakeet-tdt-0.6b-v2"
+    _hf_id = "nvidia/parakeet-tdt-0.6b-v3"
 
     def __init__(self) -> None:
         super().__init__()
