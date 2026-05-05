@@ -39,5 +39,12 @@ class ParakeetModel(ASRModel):
         if self._model is None:
             raise RuntimeError("ParakeetModel.transcribe called before load()")
         result = self._model.transcribe([samples])[0]
-        text = getattr(result, "text", None) or str(result)
+        # NeMo returns either a plain str (older API) or a Hypothesis-like
+        # object with a .text attribute. An empty .text is the canonical
+        # no-speech signal — do NOT fall back to str(result), which would
+        # serialize the entire Hypothesis repr into the response.
+        if isinstance(result, str):
+            text = result
+        else:
+            text = getattr(result, "text", None) or ""
         return ModelOutput(text=text, language=None)
